@@ -98,6 +98,8 @@ app.post('/enroll', (req, res) => {
   // TODO:
   // 1) Read fields from req.body: studentName, studentId, courseCode, semester, reason(optional)
   const { studentName, studentId, courseCode, semester, reason } = req.body;
+  // Debugging line to see form data in console
+  console.log(req.body); 
   // 2) Validate: required fields; studentId matches YYYY-NNNN; course exists
   if (!studentName || !studentIdOk(studentId) || !courseCode || !semester) {
     return res.status(400).send(page('Error', '<p class="error">Please fill out all required fields correctly.</p><p><a href="/">Back</a></p>'));
@@ -112,7 +114,6 @@ app.post('/enroll', (req, res) => {
   if (alreadyEnrolled) {  
     return res.status(400).send(page('Error', `<p class="error">You are already enrolled in ${escape(courseCode)} for ${escape(semester)}.</p><p><a href="/">Back</a></p>`)); 
   }
-
   // 3) Create enrollment object; push; increment id
   const newEnroll = {
     id: enrollmentIdCounter++,
