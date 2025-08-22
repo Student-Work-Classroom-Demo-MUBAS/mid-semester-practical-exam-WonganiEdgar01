@@ -121,18 +121,10 @@ app.post('/enroll', (req, res) => {
   enrollments.push(newEnroll);
 
   // 4) Redirect to /enrollments on success; otherwise show error page with Back link
-
+  res.redirect('/enrollments');
+  
   // 5) (Optional) Show success message on /enrollments page  
-  /* Example shape to build (DO NOT UNCOMMENT — for reference only)*/
-  const course = courseByCode(courseCode);
-  const newEnroll = {
-    id: enrollmentIdCounter++,
-    studentName, studentId, courseCode, courseName: course.name,
-    semester, reason, enrollmentDate: Date.now()
-  };
-  enrollments.push(newEnroll);
-  res.redirect('/enrollment');
-  return res.status(501).send(page('Not Implemented', '<p class="muted">TODO: implement /enroll using req.body</p><p><a href="/">Back</a></p>'));
+  
 });
 
 // Unenroll (form POST)
