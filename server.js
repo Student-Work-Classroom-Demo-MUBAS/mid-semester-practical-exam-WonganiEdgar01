@@ -102,7 +102,14 @@ app.post('/enroll', (req, res) => {
   if (!studentName || !studentIdOk(studentId) || !courseCode || !semester) {
     return res.status(400).send(page('Error', '<p class="error">Please fill out all required fields correctly.</p><p><a href="/">Back</a></p>'));
   }
+  const course = courseByCode(courseCode);
+  if (!course) {
+    return res.status(400).send(page('Error', `<p class="error">Course "${escape(courseCode)}" does not exist.</p><p><a href="/">Back</a></p>`));
+  }
+
   // 3) Create enrollment object; push; increment id
+  //    (use enrollmentIdCounter to generate unique ID)
+  const newEnroll = {
   // 4) Redirect to /enrollments on success; otherwise show error page with Back link
 
   /* Example shape to build (DO NOT UNCOMMENT — for reference only)
