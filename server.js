@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4001;
 
 /* ===== Middleware (order matters) ===== */
 // Use built-in body parser for HTML forms
@@ -97,7 +97,11 @@ app.get('/courses', (req, res) => {
 app.post('/enroll', (req, res) => {
   // TODO:
   // 1) Read fields from req.body: studentName, studentId, courseCode, semester, reason(optional)
+  const { studentName, studentId, courseCode, semester, reason } = req.body;
   // 2) Validate: required fields; studentId matches YYYY-NNNN; course exists
+  if (!studentName || !studentIdOk(studentId) || !courseCode || !semester) {
+    return res.status(400).send(page('Error', '<p class="error">Please fill out all required fields correctly.</p><p><a href="/">Back</a></p>'));
+  }
   // 3) Create enrollment object; push; increment id
   // 4) Redirect to /enrollments on success; otherwise show error page with Back link
 
