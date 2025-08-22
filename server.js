@@ -108,11 +108,22 @@ app.post('/enroll', (req, res) => {
   }
 
   // 3) Create enrollment object; push; increment id
-  //    (use enrollmentIdCounter to generate unique ID)
   const newEnroll = {
+    id: enrollmentIdCounter++,
+    studentName: escape(studentName),
+    studentId: escape(studentId),
+    courseCode: escape(courseCode),
+    courseName: escape(course.name),
+    semester: escape(semester),
+    reason: reason ? escape(reason) : '',
+    enrollmentDate: Date.now()
+  };
+  enrollments.push(newEnroll);
+
   // 4) Redirect to /enrollments on success; otherwise show error page with Back link
 
-  /* Example shape to build (DO NOT UNCOMMENT — for reference only)
+  // 5) (Optional) Show success message on /enrollments page  
+  /* Example shape to build (DO NOT UNCOMMENT — for reference only)*/
   const course = courseByCode(courseCode);
   const newEnroll = {
     id: enrollmentIdCounter++,
@@ -120,8 +131,7 @@ app.post('/enroll', (req, res) => {
     semester, reason, enrollmentDate: Date.now()
   };
   enrollments.push(newEnroll);
-  res.redirect('/enrollments');
-  */
+  res.redirect('/enrollment');
   return res.status(501).send(page('Not Implemented', '<p class="muted">TODO: implement /enroll using req.body</p><p><a href="/">Back</a></p>'));
 });
 
@@ -129,9 +139,18 @@ app.post('/enroll', (req, res) => {
 app.post('/unenroll/:id', (req, res) => {
   // TODO:
   // 1) Parse id from req.params
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(400).send(page('Error', '<p class="error">Invalid enrollment ID.</p><p><a href="/enrollments">Back</a></p>'));
+  }
   // 2) Remove matching enrollment from array if found
+  const index = enrollments.findIndex(e => e.id === id);
+  if (index === -1) {
+    return res.status(404).send(page('Error', '<p class="error">Enrollment not found.</p><p><a href="/enrollments">Back</a></p>'));
+  } 
   // 3) Redirect back to /enrollments (or show error)
-
+  enrollments.splice(index, 1);
+  res.redirect('/enrollments');
   return res.status(501).send(page('Not Implemented', '<p class="muted">TODO: implement /unenroll/:id</p><p><a href="/enrollments">Back</a></p>'));
 });
 
