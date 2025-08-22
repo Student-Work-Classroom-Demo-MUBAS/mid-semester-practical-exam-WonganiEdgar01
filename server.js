@@ -122,9 +122,7 @@ app.post('/enroll', (req, res) => {
 
   // 4) Redirect to /enrollments on success; otherwise show error page with Back link
   res.redirect('/enrollments');
-  
-  // 5) (Optional) Show success message on /enrollments page  
-  
+  // 5) (Optional) Show success message on /enrollments page 
 });
 
 // Unenroll (form POST)
@@ -144,6 +142,7 @@ app.post('/unenroll/:id', (req, res) => {
   enrollments.splice(index, 1);
   res.redirect('/enrollments');
   return res.status(501).send(page('Not Implemented', '<p class="muted">TODO: implement /unenroll/:id</p><p><a href="/enrollments">Back</a></p>'));
+  
 });
 
 // Static last so dynamic routes above take priority
