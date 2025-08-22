@@ -142,3 +142,5 @@ git push
 ```
 
 Good luck — build the core flow first, then polish UI and add your chosen advanced feature!
+
+Im using port 4001 as the other ports were giving me an error saying the port is already in use
