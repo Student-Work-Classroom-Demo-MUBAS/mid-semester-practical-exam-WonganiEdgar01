@@ -50,3 +50,17 @@ td { color: #111827; }
 .muted { color: var(--muted); }
 .grid .card h3 { margin-top: 0; }
 .footer { text-align: center; padding: 1rem; color: var(--muted); }
+
+/* styling footer */
+.footer
+{
+  background-color: var(--brand);
+  color: var(--bg);
+
+}
+.footer a
+{
+  color: var(--bg);
+  text-decoration: none;
+}
+
