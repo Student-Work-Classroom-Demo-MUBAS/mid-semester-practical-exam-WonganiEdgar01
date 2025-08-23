@@ -17,6 +17,15 @@ const availableCourses = [
   { code: "CS404", name: "Computer Networks",         instructor: "Dr. Zhao",  credits: 3, capacity: 30 },
   { code: "CS405", name: "Artificial Intelligence",   instructor: "Dr. Gomez", credits: 3, capacity: 25 }
 ];
+function idExists(id) {
+  for (let i = 0; i < availableCourses.length; i++) {
+    if (availableCourses[i].code === id) { 
+      return true;
+    }
+  }
+  return false;
+}
+
 const enrollments = []; // { id, studentName, studentId, courseCode, courseName, semester, reason, enrollmentDate }
 let enrollmentIdCounter = 1;
 
@@ -92,14 +101,35 @@ app.get('/courses', (req, res) => {
   const body = `<section class="grid">${cards}</section>`;
   res.send(page('Courses', body));
 });
-
-// Handle enrollment via standard form POST (uses req.body only)
+// Enroll (form POST)
 app.post('/enroll', (req, res) => {
-  // TODO:
+    // TODO:
   // 1) Read fields from req.body: studentName, studentId, courseCode, semester, reason(optional)
+  // 2) Validate: required fields; studentId matches YYYY-NNNN; course exists
+  // 3) Create enrollment object; push; increment id
+  // 4) Redirect to /enrollments on success; otherwise show error page with Back link
+
+  /* Example shape to build (DO NOT UNCOMMENT — for reference only)
+  const course = courseByCode(courseCode);
+  const newEnroll = {
+    id: enrollmentIdCounter++,
+    studentName, studentId, courseCode, courseName: course.name,
+    semester, reason, enrollmentDate: Date.now()
+  };
+  enrollments.push(newEnroll);
+  res.redirect('/enrollments');
+  */
+    console.log(req.body); // Debugging line to see form data in console
+  const student = {
+    id: Math.floor(Math.random() * 10000),
+    studentName: req.body.studentName,
+    studentId: req.body.studentId,
+    courseCode: req.body.courseCode,
+    semester: req.body.semester,
+    reason: req.body.reason,
+  };
   const { studentName, studentId, courseCode, semester, reason } = req.body;
-  // Debugging line to see form data in console
-  console.log(req.body); 
+
   // 2) Validate: required fields; studentId matches YYYY-NNNN; course exists
   if (!studentName || !studentIdOk(studentId) || !courseCode || !semester) {
     return res.status(400).send(page('Error', '<p class="error">Please fill out all required fields correctly.</p><p><a href="/">Back</a></p>'));
@@ -108,7 +138,11 @@ app.post('/enroll', (req, res) => {
   if (!course) {
     return res.status(400).send(page('Error', `<p class="error">Course "${escape(courseCode)}" does not exist.</p><p><a href="/">Back</a></p>`));
   }
-
+  // Check for course capacity
+  const enrolledCount = enrollments.filter(e => e.courseCode === courseCode && e.semester === semester).length;
+  if (enrolledCount >= course.capacity) { 
+    return res.status(400).send(page('Error', `<p class="error">Course "${escape(courseCode)}" is full for ${escape(semester)}.</p><p><a href="/">Back</a></p>`));
+  }
   // Check for duplicate enrollment
   const alreadyEnrolled = enrollments.some(e => e.studentId === studentId && e.courseCode === courseCode && e.semester === semester);
   if (alreadyEnrolled) {  
@@ -126,27 +160,33 @@ app.post('/enroll', (req, res) => {
     enrollmentDate: Date.now()
   };
   enrollments.push(newEnroll);
-
-  // 4) Redirect to /enrollments on success; otherwise show error page with Back link
+// 4) Redirect to /enrollments on success; otherwise show error page with Back link
   res.redirect('/enrollments');
-  // 5) (Optional) Show success message on /enrollments page 
+
+
 });
 
 // Unenroll (form POST)
-app.post('/unenroll/:id', (req, res) => {
+
   // TODO:
   // 1) Parse id from req.params
+  // 2) Remove matching enrollment from array if found
+  // 3) Redirect back to /enrollments (or show error)
+app.post('/unenroll/:id', (req, res) => {
+  console.log(req.params.id);
+// Debugging line to see the id in console
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) {
     return res.status(400).send(page('Error', '<p class="error">Invalid enrollment ID.</p><p><a href="/enrollments">Back</a></p>'));
   }
-  // 2) Remove matching enrollment from array if found
+// 2) Remove matching enrollment from array if found
   const index = enrollments.findIndex(e => e.id === id);
   if (index === -1) {
     return res.status(404).send(page('Error', '<p class="error">Enrollment not found.</p><p><a href="/enrollments">Back</a></p>'));
   }
-  // 3) Redirect back to /enrollments (or show error)
+
   enrollments.splice(index, 1);
+
   res.redirect('/enrollments');
 });
 
